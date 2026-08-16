@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       publish_to_npm:
-        description: '发布到 npm（勾选后才会执行 npm publish）'
+        description: '发布到 npm（取消勾选则仅更新 GitHub Pages）'
         type: boolean
         required: true
         default: true
@@ -22,14 +22,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
-    name: Build, publish & deploy pages
+  validate:
+    name: Validate & build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,13 +34,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: https://registry.npmjs.org
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
       - name: Verify tag matches package version
+        if: ${{ github.event_name == 'push' }}
         run: |
           TAG_VERSION="${GITHUB_REF_NAME#v}"
           PKG_VERSION="$(node -p 'require("./package.json").version')"
@@ -61,11 +57,52 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+  publish:
+    name: Publish npm package
+    needs: validate
+    if: ${{ github.event_name == 'push' || inputs.publish_to_npm == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Publish to npm
-        if: ${{ github.event_name == 'push' || inputs.publish_to_npm == 'true' }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --provenance --access public
+
+  pages:
+    name: Deploy GitHub Pages
+    needs: [validate, publish]
+    if: ${{ always() && needs.validate.result == 'success' && needs.publish.result != 'failure' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Build static site
         run: npm run build:site
