@@ -55,11 +55,11 @@ jobs:
             exit 1
           fi
 
-      - name: Typecheck
-        run: npm run typecheck
-
       - name: Build package
         run: npm run build
+
+      - name: Typecheck
+        run: npm run typecheck
 
       - name: Publish to npm
         if: ${{ github.event_name == 'push' || inputs.publish_to_npm == 'true' }}
