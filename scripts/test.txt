@@ -1,0 +1,2 @@
+hello 'single' "double"
+line2 $HOME

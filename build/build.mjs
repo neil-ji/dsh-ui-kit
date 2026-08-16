@@ -204,10 +204,10 @@ const tsconfigBuild = {
     verbatimModuleSyntax: false,
     declaration: true,
     emitDeclarationOnly: true,
-    outDir: typesOutDir,
-    rootDir: srcDir,
+    outDir: 'dist/types',
+    rootDir: 'src',
   },
-  include: [srcDir],
+  include: ['src'],
 }
 writeFileSync(path.join(root, 'tsconfig.build.json'), JSON.stringify(tsconfigBuild, null, 2))
 execSync('npx tsc -p tsconfig.build.json', { cwd: root, stdio: 'inherit' })

@@ -1,5 +1,7 @@
 # dsh-ui-kit
 
+> 🚀 [落地页](https://neil-ji.github.io/dsh-ui-kit/) · 📖 [官方文档](https://neil-ji.github.io/dsh-ui-kit/docs/) · [npm](https://www.npmjs.com/package/dsh-ui-kit) · [GitHub](https://github.com/neil-ji/dsh-ui-kit)
+
 独立发布的 React 组件库，忠实复刻 DeepSeek Harness Web UI 的设计系统与 UI 原子组件：
 **tokens、明暗主题、组件样式与官方 `@deepseek-ai/dsh-client-ui-primitives` / `dsh-client-ui-theme` 严格一致**（MIT，零 cordis 依赖）。
 
@@ -80,6 +82,8 @@ Token 分四层（与 DSH 官方一致，见 `src/styles/`）：
 ```sh
 npm run build        # dist/：自包含 ESM bundle + tokens.css + katex + 类型声明
 npm run demo         # 启动 vite demo（明暗切换 + 全组件展示）
+npm run build:site   # 生成 GitHub Pages 静态站点到 site/
+npm run site:serve   # 本地预览生成的站点（默认 http://localhost:4173）
 npm pack             # 产出可发布的 tarball
 npm publish          # 发布到 npm（publishConfig.access: public）
 ```
@@ -94,6 +98,21 @@ dist/
   katex/                # KaTeX 样式与字体（供 dsh-ui-kit/katex.css 子路径）
   css/                  # 编译后的 CSS 注入模块
 ```
+
+## CI/CD 发布
+
+仓库内置 .github/workflows/release.yml，实现：
+
+1. **基于 git tag 发布**：推送 `vX.Y.Z` 标签触发；Workflow 校验 tag 与 `package.json.version` 一致后执行 typecheck 与 build。
+2. **自动发布 npm**：使用 `npm publish --provenance --access public` 发布，需要仓库 secret `NPM_TOKEN`（npm 的 Automation access token）。
+3. **自动更新 GitHub Pages**：npm 发布成功后运行 `npm run build:site`，生成落地页与文档，并通过 `actions/deploy-pages` 部署到 https://neil-ji.github.io/dsh-ui-kit/。
+
+首次启用前需要在仓库中配置：
+
+- 添加 secret：`Settings → Secrets and variables → Actions → New repository secret`，名称为 `NPM_TOKEN`。
+- 启用 Pages：`Settings → Pages → Source` 选择 **GitHub Actions**。
+- 可先本地执行一次 `npm publish` 创建 npm 包记录，或直接推送首个 tag 由 Workflow 创建。
+- 如需只更新 Pages 不发布 npm：在 Actions 页签手动运行 `Release & Pages`，取消勾选 `publish_to_npm`。
 
 ## License
 

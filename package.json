@@ -43,6 +43,7 @@
     "access": "public"
   },
   "license": "MIT",
+  "homepage": "https://neil-ji.github.io/dsh-ui-kit/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/neil-ji/dsh-ui-kit.git"
@@ -52,6 +53,8 @@
     "typecheck": "tsc --noEmit",
     "demo": "vite demo",
     "demo:build": "vite build demo",
+    "build:site": "node scripts/build-site.mjs",
+    "site:serve": "node scripts/serve-site.mjs",
     "prepack": "npm run build"
   },
   "peerDependencies": {
@@ -85,6 +88,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "esbuild": "^0.25.0",
     "lightningcss": "^1.29.0",
+    "marked": "^15.0.12",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": "^5.7.0",

@@ -15,10 +15,10 @@
     "verbatimModuleSyntax": false,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "/Users/neilji/AIGC/dsh-ui-kit/dist/types",
-    "rootDir": "/Users/neilji/AIGC/dsh-ui-kit/src"
+    "outDir": "dist/types",
+    "rootDir": "src"
   },
   "include": [
-    "/Users/neilji/AIGC/dsh-ui-kit/src"
+    "src"
   ]
 }
