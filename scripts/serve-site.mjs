@@ -28,7 +28,7 @@ function resolvePath(urlPath) {
   let pathname = decodeURIComponent(urlPath.split('?')[0])
   if (pathname.endsWith('/')) pathname += 'index.html'
   const file = path.normalize(path.join(root, pathname))
-  if (!file.startsWith(root)) return null
+  if (file !== root && !file.startsWith(root + path.sep)) return null
   return file
 }
 
