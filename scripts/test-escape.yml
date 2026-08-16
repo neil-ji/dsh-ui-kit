@@ -1,7 +1,0 @@
-name: test
-on:
-  push:
-    tags:
-      - 'v*'
-env:
-  TOKEN: ${{ secrets.NPM_TOKEN }}
